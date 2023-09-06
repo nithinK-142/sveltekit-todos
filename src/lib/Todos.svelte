@@ -1,8 +1,8 @@
 <script>
   import "../app.css";
   import trash from "../assets/trash.svg";
-  import Login from "../routes/Login.svelte"
-  import { isLoggedIn } from "../stores"
+  import Login from "../routes/login.svelte";
+  import { isLoggedIn, user } from "../stores"
   import { flip } from "svelte/animate";
   import { db } from "./firebaseConfig";
   import {
@@ -89,10 +89,7 @@
 
 <svelte:window on:keydown={keyPressed} />
 
-{#if !isLoggedIn}
-  <Login />
-{:else}
-
+{#if $isLoggedIn}
   <div class="container">
     <div class="main-container">
       <h1>Todos 📓</h1>
@@ -141,7 +138,8 @@
       </div>
     </div>
   </div>
-
+{:else}
+  <Login />
 {/if}
 
 <style>
@@ -174,6 +172,7 @@
   .input-container {
     margin-bottom: 20px;
     border: 1px solid #ddd;
+    height: 3.2rem;
   }
   
   input {
@@ -219,7 +218,7 @@
     background-color: #f2f0ee;
     display: flex;
     justify-content: space-between;
-    padding: 10px 4px;
+    padding: 8px 4px;
     padding-right: 10px;
     margin-bottom: 4px;
   }
@@ -234,7 +233,7 @@
   }
 
   .tasks {
-    padding-top: 4px;
+    /* padding-top: 4px; */
     padding-left: 10px;
   }
 

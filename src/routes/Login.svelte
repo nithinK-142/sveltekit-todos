@@ -1,6 +1,6 @@
 <script>
   import { auth, googleProvider, githubProvider } from "$lib/firebaseConfig";
-  import { isLoggedIn } from "../stores";
+  import { isLoggedIn, user } from "../stores";
   import { signInWithPopup } from "firebase/auth";
   import Todos from "$lib/Todos.svelte";
 
@@ -12,11 +12,13 @@
     try {
       const providerMap = {
         Google: {
+          details: "user",
           provider: googleProvider,
           userNameProp: "user.displayName",
           imageURLProp: "user.photoURL",
         },
         GitHub: {
+          details: "_tokenResponse",
           provider: githubProvider,
           userNameProp: "_tokenResponse.screenName",
           imageURLProp: "_tokenResponse.photoUrl",
@@ -27,10 +29,11 @@
 
       const signInResponse = await signInWithPopup(auth, selectedProvider.provider);
 
+      console.log(signInResponse)
       const userName = eval(`signInResponse.${selectedProvider.userNameProp}`);
       const userImageURL = eval(`signInResponse.${selectedProvider.imageURLProp}`) || null;
 
-      // $user = signInResponse.user;
+      $user = eval(`signInResponse.${selectedProvider.details}`);
       $isLoggedIn = true;
       
       localStorage.setItem("userName", userName);
@@ -72,6 +75,11 @@
     >
       Logout
     </a>
+  </div>
+
+  
+  <div class="">
+    <pre>{JSON.stringify($user, null, 2)}</pre>
   </div>
 
 {:else}
