@@ -4,8 +4,9 @@
   import { signInWithPopup } from "firebase/auth";
   import Todos from "$lib/Todos.svelte";
 
-    let localUserName = "";
-    let localUserImageURL = "";
+    // let localUID = "";
+    // let localUserName = "";
+    // let localUserImageURL = "";
 
 
   const login = async (provider) => {
@@ -32,22 +33,25 @@
       // const userImageURL = eval(`signInResponse.${selectedProvider.imageURLProp}`) || null;
       // $user = eval(`signInResponse.${selectedProvider.details}`);
 
-      
-      const userName = signInResponse.user.displayName || "user23";
-      const userImageURL = signInResponse.user.photoURL || null;
+      console.log(signInResponse._tokenResponse)
+      console.log(signInResponse.user)
 
-      $user = signInResponse.user;
+      // const uid = signInResponse.user.uid;
+      // const userName = signInResponse.user.displayName || "user23";
+      // const userImageURL = signInResponse.user.photoURL || null;
+
+      $user = signInResponse;
 
       const objectSize = Object.keys($user).length;
       console.log(`Size of $user object: ${objectSize}`);
 
       $isLoggedIn = true;
       
-      localStorage.setItem("userName", userName);
-      localStorage.setItem("userImageURL", userImageURL);
+      // localStorage.setItem("userName", userName);
+      // localStorage.setItem("userImageURL", userImageURL);
 
-      localUserName = userName;
-      localUserImageURL = userImageURL;
+      // localUserName = userName;
+      // localUserImageURL = userImageURL;
 
     } catch (error) {
       console.error(error);
@@ -58,13 +62,7 @@
 </script>
 
 {#if $isLoggedIn}
-
-
-
     <Todos />
-
-
-
 {:else}
 
   <section>
