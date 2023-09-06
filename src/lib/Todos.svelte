@@ -1,10 +1,10 @@
 <script>
   import "../app.css";
   import trash from "../assets/trash.svg";
-  import Login from "../routes/login.svelte";
-  import { isLoggedIn, user } from "../stores"
+  import Login from "../routes/Login.svelte";
+  import { isLoggedIn, user } from "../stores";
   import { flip } from "svelte/animate";
-  import { db } from "./firebaseConfig";
+  import { auth, db } from "./firebaseConfig";
   import {
     collection,
     onSnapshot,
@@ -15,21 +15,35 @@
     query,
     orderBy,
   } from "firebase/firestore";
+  import Navbar from "./Navbar.svelte";
 
   let task = "";
   let fbTodos = [];
 
+  let userId = sessionStorage.getItem("userId") || null;
+
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      $isLoggedIn = true;
+      userId = user.uid;
+      sessionStorage.setItem("userId", user.uid);
+      firestoreInit();
+    } else {
+      $isLoggedIn = false;
+      fbTodos = [];
+      sessionStorage.setItem("userId", null);
+    }
+  });
+
   const handleSnapshot = (querySnapshot) => {
     fbTodos.length = 0;
-    querySnapshot.forEach(
-      (doc) => {
-        const todo = {
-          ...doc.data(),
-          id: doc.id,
-        };
-        fbTodos.push(todo);
-      }
-    );
+    querySnapshot.forEach((doc) => {
+      const todo = {
+        ...doc.data(),
+        id: doc.id,
+      };
+      fbTodos.push(todo);
+    });
   };
 
   const firestoreInit = () => {
@@ -85,59 +99,79 @@
 
     return `${firstSlice} ${secondSlice}`;
   };
+
+  const logout = async () => {
+    // await auth.signOut();
+    $isLoggedIn = false;
+    localStorage.setItem("userName", null);
+    localStorage.setItem("userImageURL", null);
+  }
 </script>
 
 <svelte:window on:keydown={keyPressed} />
 
 {#if $isLoggedIn}
-  <div class="container">
-    <div class="main-container">
-      <h1>Todos 📓</h1>
 
-      <div class="input-container flex">
-        <input type="text" placeholder="Add a Task" bind:value={task} />
-        <button class="addBtn btn" on:click={addTodo}>+</button>
-      </div>
+  <Navbar />
 
-      <div class="todo-container">
-        {#each fbTodos as item (item.id)}
-          <div class="todo-list" animate:flip={{ duration: 200 }}>
-            <div class="flex">
-              <!-- svelte-ignore a11y-click-events-have-key-events -->
-              <!-- svelte-ignore a11y-no-static-element-interactions -->
-              <div
-                class="status-container btn"
-                on:click={() => markComplete(item.id, item.isComplete)}
-                title={item.isComplete
-                  ? "Mark as incomplete"
-                  : "Mark as complete"}
-              >
-                {item.isComplete ? "🔳" : "✅"}
+    <div class="container">
+      <div class="main-container">
+
+        <div class="input-container flex">
+          <input type="text" placeholder="Add a Task" bind:value={task} />
+          <button class="addBtn btn" on:click={addTodo}>+</button>
+        </div>
+
+        <div class="todo-container">
+          {#each fbTodos as item (item.id)}
+            <div class="todo-list" animate:flip={{ duration: 200 }}>
+              <div class="flex">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div
+                  class="status-container btn"
+                  on:click={() => markComplete(item.id, item.isComplete)}
+                  title={item.isComplete
+                    ? "Mark as incomplete"
+                    : "Mark as complete"}
+                >
+                  {item.isComplete ? "🔳" : "✅"}
+                </div>
+                <div class="tasks" class:complete={item.isComplete}>
+                  {#if item.task.length < 25}
+                    {item.task}
+                  {:else}
+                    {formatAndSliceTask(item.task)}
+                  {/if}
+                </div>
               </div>
-              <div class="tasks" class:complete={item.isComplete}>
-                {#if item.task.length < 25}
-                  {item.task}
-                {:else}
-                  {formatAndSliceTask(item.task)}
-                {/if}
+              <div class="delete-container">
+                <button
+                  class="trashBtn btn"
+                  on:click={() => markIncomplete(item.id)}
+                  title="Delete this task."
+                >
+                  <img class="trashIcon" src={trash} alt="trashIcon" />
+                </button>
               </div>
             </div>
-            <div class="delete-container">
-              <button
-                class="trashBtn btn"
-                on:click={() => markIncomplete(item.id)}
-                title="Delete this task."
-              >
-                <img class="trashIcon" src={trash} alt="trashIcon" />
-              </button>
-            </div>
-          </div>
-        {:else}
-          <p>No Tasks todo</p>
-        {/each}
+          {:else}
+            <p>No Tasks todo</p>
+          {/each}
+        </div>
       </div>
+
+      <!-- svelte-ignore a11y-click-events-have-key-events -->
+      <!-- svelte-ignore a11y-missing-attribute -->
+      <!-- svelte-ignore a11y-no-static-element-interactions -->
+      <a
+      class="block rounded-md bg-yellow-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-yellow-700 lg:text-md"
+      on:click={logout}>
+      Logout
+      </a>
     </div>
-  </div>
+    
+
 {:else}
   <Login />
 {/if}
@@ -159,22 +193,16 @@
     align-items: center;
   }
 
-  h1 {
-    font-size: 3.125rem;
-    font-weight: bold;
-    text-align: center;
-  }
-
   .flex {
     display: flex;
   }
-  
+
   .input-container {
     margin-bottom: 20px;
     border: 1px solid #ddd;
     height: 3.2rem;
   }
-  
+
   input {
     font-family: inherit;
     font-size: inherit;
@@ -196,7 +224,7 @@
     background: none;
     cursor: pointer;
   }
-  
+
   .addBtn {
     background: #77b255;
     color: white;
@@ -251,9 +279,4 @@
     text-align: center;
   }
 
-  @media screen and (max-width: 460px) {
-    h1 {
-      font-size: 2.25rem;
-    }
-  }
 </style>
