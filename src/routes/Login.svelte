@@ -33,8 +33,8 @@
       // const userImageURL = eval(`signInResponse.${selectedProvider.imageURLProp}`) || null;
       // $user = eval(`signInResponse.${selectedProvider.details}`);
 
-      console.log(signInResponse._tokenResponse)
-      console.log(signInResponse.user)
+      // console.log(signInResponse._tokenResponse)
+      // console.log(signInResponse.user)
 
       // const uid = signInResponse.user.uid;
       // const userName = signInResponse.user.displayName || "user23";
@@ -42,8 +42,8 @@
 
       $user = signInResponse;
 
-      const objectSize = Object.keys($user).length;
-      console.log(`Size of $user object: ${objectSize}`);
+      // const objectSize = Object.keys($user).length;
+      // console.log(`Size of $user object: ${objectSize}`);
 
       $isLoggedIn = true;
       
