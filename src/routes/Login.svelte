@@ -12,16 +12,15 @@
     try {
       const providerMap = {
         Google: {
-          details: "user",
           provider: googleProvider,
-          userNameProp: "user.displayName",
-          imageURLProp: "user.photoURL",
+          // userNameProp: "user.displayName",
+          // imageURLProp: "user.photoURL",
         },
         GitHub: {
-          details: "_tokenResponse",
           provider: githubProvider,
-          userNameProp: "_tokenResponse.screenName",
-          imageURLProp: "_tokenResponse.photoUrl",
+          // userNameProp: "user.displayName",
+          // imageURLProp: "user.photoURL",
+          // userNameHandle: "_tokenResponse.screenName"
         },
       };
 
@@ -29,11 +28,19 @@
 
       const signInResponse = await signInWithPopup(auth, selectedProvider.provider);
 
-      console.log(signInResponse)
-      const userName = eval(`signInResponse.${selectedProvider.userNameProp}`);
-      const userImageURL = eval(`signInResponse.${selectedProvider.imageURLProp}`) || null;
+      // const userName = eval(`signInResponse.${selectedProvider.userNameProp}`) || eval(`signInResponse.${selectedProvider.userNameHandle}`);
+      // const userImageURL = eval(`signInResponse.${selectedProvider.imageURLProp}`) || null;
+      // $user = eval(`signInResponse.${selectedProvider.details}`);
 
-      $user = eval(`signInResponse.${selectedProvider.details}`);
+      
+      const userName = signInResponse.user.displayName || "user23";
+      const userImageURL = signInResponse.user.photoURL || null;
+
+      $user = signInResponse.user;
+
+      const objectSize = Object.keys($user).length;
+      console.log(`Size of $user object: ${objectSize}`);
+
       $isLoggedIn = true;
       
       localStorage.setItem("userName", userName);
@@ -47,40 +54,16 @@
     }
   };
 
-  const logout = async () => {
-    // await auth.signOut();
-    $isLoggedIn = false;
-    localStorage.setItem("userName", null);
-    localStorage.setItem("userImageURL", null);
-  }
 
 </script>
 
 {#if $isLoggedIn}
 
-  <div class="sm:flex sm:flex-col sm:justify-center sm:items-center m-10 gap-6">
-    <h1 class="text-black text-2xl font-semibold">Welcome, {localUserName}!</h1>
-    <span class="h-20 w-20 rounded-full">
-      <img src={localUserImageURL} alt="UserImage" class=" rounded-full" />
-    </span>
+
 
     <Todos />
 
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
-    <!-- svelte-ignore a11y-missing-attribute -->
-    <!-- svelte-ignore a11y-no-static-element-interactions -->
-    <a
-      class="block rounded-md bg-yellow-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-yellow-700 lg:text-md"
-      on:click={logout}
-    >
-      Logout
-    </a>
-  </div>
 
-  
-  <div class="">
-    <pre>{JSON.stringify($user, null, 2)}</pre>
-  </div>
 
 {:else}
 
@@ -96,7 +79,7 @@
       <h2
         class="bg-gradient-to-r from-teal-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text text-2xl font-bold font-mono px-3"
       >
-        Google Login Authentication
+        Todo App
       </h2>
     </div>
 
