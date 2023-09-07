@@ -90,7 +90,7 @@
         <div class="flex justify-center m-4 space-x-6">
           <span class="w-12 h-12 bg-white hover:bg-teal-100 hover:scale-110 rounded-xl select-none">
             <button
-              class="bg-opacity-0 cursor-pointer"
+              class="bg-opacity-0 cursor-pointer focus:cursor-progress"
               on:click={() => login("Google")}
             >
               <img src={Google} alt="Google" class="w-12 h-12" />
@@ -99,7 +99,7 @@
     
           <span class="w-12 h-12 bg-white hover:bg-teal-100 hover:scale-110 rounded-xl select-none flex align-center justify-center">
             <button
-              class="bg-opacity-0 cursor-pointer"
+              class="bg-opacity-0 cursor-pointer focus:cursor-progress"
               on:click={() => login("GitHub")}
             >
               <img
