@@ -16,6 +16,13 @@
     orderBy,
   } from "firebase/firestore";
   import Navbar from "./Navbar.svelte";
+  import { onMount } from 'svelte';
+
+  let inputElement;
+
+  onMount(() => {
+    inputElement.focus();
+  });
 
   let task = "";
   let userTodos = [];
@@ -100,14 +107,17 @@
 
   <Navbar />
 
-    <div class="container">
+    <div class="containerr">
       <div class="main-container">
 
-        <div class="input-container flex">
-          <input type="text" placeholder="Add a Task" bind:value={task} />
-          <button class="addBtn btn" on:click={addTodo}>+</button>
+        <div class="w-full my-14 grid items-center font-['Verdana']">
+          <input type="text" placeholder=" What needs to be done?"
+          class="px-1 py-1 text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60 border-b border-opacity-25 border-white"
+          bind:this={inputElement}
+          bind:value={task}
+          />
         </div>
-
+        
         <div class="todo-container">
           {#each userTodos as item (item.id)}
             <div class="todo-list" animate:flip={{ duration: 200 }}>
@@ -163,7 +173,7 @@
 {/if}
 
 <style>
-  .container {
+  .containerr {
     display: grid;
     place-items: center;
     height: 100%;
@@ -183,25 +193,6 @@
     display: flex;
   }
 
-  .input-container {
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    height: 3.2rem;
-  }
-
-  input {
-    font-family: inherit;
-    font-size: inherit;
-    padding: 0.4em 1em;
-    border-radius: 2px;
-    border: 1px solid #ccc;
-    box-shadow: 0 0 2px #ddd;
-  }
-
-  input:focus {
-    outline: 1px solid #444;
-  }
-
   .btn {
     margin: 0;
     padding: 0;
@@ -209,18 +200,6 @@
     border-radius: 0;
     background: none;
     cursor: pointer;
-  }
-
-  .addBtn {
-    background: #77b255;
-    color: white;
-    font-weight: bold;
-    padding: 10px 15px;
-    font-size: inherit;
-  }
-
-  .addBtn:active {
-    opacity: 0.7;
   }
 
   .todo-container {
@@ -263,6 +242,7 @@
   }
 
   p {
+    color: white;
     text-align: center;
   }
 
