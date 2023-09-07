@@ -6,13 +6,13 @@
 </script>
 
 <nav>
-    <div class="w-full flex justify-between px-4 py-2 select-none">
+    <div class="w-full flex justify-between px-4 py-2 select-none bg-[#222]">
 
         <div class="flex items-center space-x-2">
             <span class="object-cover h-6">
                 <img src={logo} alt="logo" class="h-6 object-cover" id="user-image" />
             </span>
-            <h1>
+            <h1 class="text-white">
                 <strong>Svelte Todos</strong>
             </h1>
         </div>

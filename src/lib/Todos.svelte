@@ -262,6 +262,7 @@
 
   .tasks {
     /* padding-top: 4px; */
+    font-size: smaller;
     padding-left: 10px;
   }
 
