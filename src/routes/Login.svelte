@@ -69,17 +69,9 @@
 
   <section>
 
-    <div class="flex flex-col items-center justify-center gap-4 mt-32 text-center">
-      <h1
-        class="bg-gradient-to-r from-teal-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text text-3xl sm:text-4xl font-bold font-mono"
-      >
-        Sveltkit & Firebase
-      </h1>
-      <h2
-        class="bg-gradient-to-r from-teal-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text text-2xl sm:text-3xl font-bold font-mono px-3"
-      >
-        Todo App
-      </h2>
+    <div class="flex-center flex-col gap-4 mt-32 text-center">
+      <h1 class="app-heading text-3xl sm:text-4xl"> Sveltkit & Firebase</h1>
+      <h2 class="app-heading text-2xl sm:text-3xl"> Todo App</h2>
     </div>
 
     <div class="w-full flex justify-center mt-10">
@@ -88,18 +80,18 @@
         <h3 class="text-black text-center font-bold">Login</h3>
         
         <div class="flex justify-center m-4 space-x-6">
-          <span class="w-12 h-12 bg-white hover:bg-teal-100 hover:scale-110 rounded-xl select-none">
+          <span class="login-container">
             <button
-              class="bg-opacity-0 cursor-pointer focus:cursor-progress"
+              class="login-btn"
               on:click={() => login("Google")}
             >
               <img src={Google} alt="Google" class="w-12 h-12" />
             </button>
           </span>
     
-          <span class="w-12 h-12 bg-white hover:bg-teal-100 hover:scale-110 rounded-xl select-none flex align-center justify-center">
+          <span class="login-container flex-center">
             <button
-              class="bg-opacity-0 cursor-pointer focus:cursor-progress"
+              class="login-btn"
               on:click={() => login("GitHub")}
             >
               <img

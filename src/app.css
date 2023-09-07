@@ -15,3 +15,19 @@ body {
   font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace;
   font-size: 24px;
 }
+
+
+.app-heading {
+  @apply bg-gradient-to-r from-teal-500 via-orange-500 to-yellow-500 text-transparent bg-clip-text font-bold font-mono 
+}
+.login-container {
+  @apply w-12 h-12 bg-white hover:bg-teal-100 hover:scale-110 rounded-xl select-none;
+}
+
+.login-btn {
+  @apply bg-opacity-0 cursor-pointer focus:cursor-progress;
+}
+
+.flex-center {
+  @apply flex items-center justify-center 
+}
