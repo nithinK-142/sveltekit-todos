@@ -1,8 +1,6 @@
 <script>
     import { user } from "../stores";
     import logo from "../assets/todo32.png";
-
-    console.log($user)
 </script>
 
 <nav>

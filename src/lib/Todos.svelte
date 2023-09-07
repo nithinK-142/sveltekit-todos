@@ -18,41 +18,26 @@
   import Navbar from "./Navbar.svelte";
 
   let task = "";
-  let fbTodos = [];
+  let userTodos = [];
 
-  let userId = sessionStorage.getItem("userId") || null;
+  const userCollection = collection(db, "users");
+  const userTodosCollection = collection(userCollection, $user.user.uid, "todos");
 
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      $isLoggedIn = true;
-      userId = user.uid;
-      sessionStorage.setItem("userId", user.uid);
-      firestoreInit();
-    } else {
-      $isLoggedIn = false;
-      fbTodos = [];
-      sessionStorage.setItem("userId", null);
-    }
-  });
-
-  const handleSnapshot = (querySnapshot) => {
-    fbTodos.length = 0;
+  const getTodos = (querySnapshot) => {
+    userTodos.length = 0;
     querySnapshot.forEach((doc) => {
       const todo = {
         ...doc.data(),
         id: doc.id,
       };
-      fbTodos.push(todo);
+      userTodos.push(todo);
     });
   };
 
   const firestoreInit = () => {
-    const todoRef = query(
-      collection(db, "todos"),
-      orderBy("createdAt", "desc")
-    );
+    const todoRef = query(userTodosCollection, orderBy("createdAt", "desc"));
 
-    return onSnapshot(todoRef, handleSnapshot, handleError);
+    return onSnapshot(todoRef, getTodos, handleError);
   };
 
   const handleError = (err) => {
@@ -66,7 +51,7 @@
     const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
 
     if (task !== "") {
-      const addRef = await addDoc(collection(db, "todos"), {
+      const todoRef = await addDoc(userTodosCollection, {
         task: task,
         isComplete: false,
         createdAt: formattedDateAndTime,
@@ -75,18 +60,15 @@
     task = "";
   };
 
-  const keyPressed = (event) => {
-    if (event.keyCode === 13) addTodo();
+  
+  const deleteTodo = async (id) => {
+    await deleteDoc(doc(userTodosCollection, id));
   };
 
   const markComplete = async (id, completionStatus) => {
-    await updateDoc(doc(db, "todos", id), {
+    await updateDoc(doc(userTodosCollection, id), {
       isComplete: !completionStatus,
     });
-  };
-
-  const markIncomplete = async (id) => {
-    await deleteDoc(doc(db, "todos", id));
   };
 
   const formatAndSliceTask = (task) => {
@@ -100,11 +82,15 @@
     return `${firstSlice} ${secondSlice}`;
   };
 
+  const keyPressed = (event) => {
+    if (event.keyCode === 13) addTodo();
+  };
+
   const logout = async () => {
-    // await auth.signOut();
+    await auth.signOut();
     $isLoggedIn = false;
-    localStorage.setItem("userName", null);
-    localStorage.setItem("userImageURL", null);
+    // localStorage.setItem("userName", null);
+    // localStorage.setItem("userImageURL", null);
   }
 </script>
 
@@ -123,7 +109,7 @@
         </div>
 
         <div class="todo-container">
-          {#each fbTodos as item (item.id)}
+          {#each userTodos as item (item.id)}
             <div class="todo-list" animate:flip={{ duration: 200 }}>
               <div class="flex">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -148,7 +134,7 @@
               <div class="delete-container">
                 <button
                   class="trashBtn btn"
-                  on:click={() => markIncomplete(item.id)}
+                  on:click={() => deleteTodo(item.id)}
                   title="Delete this task."
                 >
                   <img class="trashIcon" src={trash} alt="trashIcon" />
