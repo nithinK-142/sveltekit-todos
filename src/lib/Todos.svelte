@@ -111,7 +111,7 @@
       <div class="main-container">
 
         <div class="w-full my-14 grid items-center font-['Verdana']">
-          <input type="text" placeholder=" What needs to be done?"
+          <input type="text" placeholder="What needs to be done?"
           class="px-1 py-1 text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60 border-b border-opacity-25 border-white"
           bind:this={inputElement}
           bind:value={task}
