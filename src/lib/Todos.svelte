@@ -1,75 +1,70 @@
 <script>
   import "../app.css";
+  import { onMount } from 'svelte';
+  import Navbar from "./Navbar.svelte";
+  import { onSnapshot } from "firebase/firestore";
   import trash from "../assets/trash.svg";
   import Login from "../routes/Login.svelte";
-  import { isLoggedIn, user } from "../stores";
-  import { flip } from "svelte/animate";
+  import { isLoggedIn, user, isLoading } from "../stores";
   import { auth, db } from "./firebaseConfig";
-  import {
-    collection,
-    onSnapshot,
-    doc,
-    updateDoc,
-    deleteDoc,
-    addDoc,
-    query,
-    orderBy,
-    where
-  } from "firebase/firestore";
-  import Navbar from "./Navbar.svelte";
-  import { onMount } from 'svelte';
+  import { collection, doc, updateDoc, deleteDoc, addDoc, query, orderBy, where } from "firebase/firestore";
+  import { flip } from "svelte/animate";
+
+  // Initialize Firebase once
+  const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
+  const orderDesc = orderBy("createdAt", "desc");
+
+  // State variables
+  let task = "";
+  let userTodos = [];
+  let filter = "";
+  let inputElement;
 
   onMount(() => {
     firestoreInit();
     inputElement.focus();
   });
 
-  let task = "";
-  let userTodos = [];
-  let inputElement;
-
-  const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
-
-  const getTodos = (querySnapshot) => {
-    userTodos.length = 0;
-    querySnapshot.forEach((doc) => {
-      const todo = {
-        ...doc.data(),
-        id: doc.id,
-      };
-      userTodos.push(todo);
-    });
-  };
-
-  const firestoreInit = (filter) => {
-    const orderDesc = orderBy("createdAt", "desc");
+  const firestoreInit = () => {
     let queryConfig = query(userTodosCollection, orderDesc);
-
     if (filter === 'active') {
       queryConfig = query(queryConfig, where("isComplete", "==", false));
     } else if (filter === 'completed') {
       queryConfig = query(queryConfig, where("isComplete", "==", true));
-     }
+    }
 
-    return onSnapshot(queryConfig, getTodos, handleError);
+    userTodos.length = 0;
+
+    onSnapshot(queryConfig, (querySnapshot) => {
+      userTodos = querySnapshot.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+      }));
+      $isLoading = false;
+    },(error) => {
+      // console.error("Firestore error:", error);
+    });
   };
 
-  const handleError = (err) => {
-    // console.error("Firebase error:", err);
+  const handleFilterClick = (selectedFilter) => {
+    $isLoading = true;
+    setTimeout(() => {
+      filter = selectedFilter;
+      firestoreInit();
+    }, 300);
   };
 
   const addTodo = async () => {
-    const currentDate = new Date();
-    const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
-
     if (task !== "") {
+      const currentDate = new Date();
+      const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
       await addDoc(userTodosCollection, {
         task: task,
         isComplete: false,
         createdAt: formattedDateAndTime,
       });
+      task = "";
     }
-    task = "";
   };
   
   const deleteTodo = async (id) => {
@@ -98,7 +93,7 @@
   };
 
   const logout = async () => {
-    await auth.signOut();
+    // await auth.signOut();
     $isLoggedIn = false;
     // localStorage.setItem("userName", null);
     // localStorage.setItem("userImageURL", null);
@@ -108,38 +103,39 @@
 <svelte:window on:keydown={keyPressed} />
 
 {#if $isLoggedIn}
+<Navbar />
+  <div class="containerr">
+    <div class="main-container">
 
-  <Navbar />
+      <div class="flex justify-center mt-14 mb-4 font-['Verdana']">
+        <input type="text" placeholder="What needs to be done?"
+        class="px-1 py-1 text-xl sm:text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60  border-white border-b border-opacity-25"
+        bind:this={inputElement}
+        bind:value={task}
+        />
+      </div>
+      
+      <div class="todo-container">
 
-    <div class="containerr">
-      <div class="main-container">
+        <div class="w-1/2 sm:w-full text-sm sm:text-xl my-8 text-[#999] border-white border-b border-opacity-25">
 
-        <div class="flex justify-center mt-14 mb-4 font-['Verdana']">
-          <input type="text" placeholder="What needs to be done?"
-          class="px-1 py-1 text-xl sm:text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60  border-white border-b border-opacity-25"
-          bind:this={inputElement}
-          bind:value={task}
-          />
+          <button on:click={() => handleFilterClick()} class="focus:text-white">All</button>
+
+          <span class="opacity-40">/</span>
+
+          <button on:click={() => handleFilterClick("active")} class="focus:text-white">Active</button>
+
+          <span class="opacity-40">/</span>
+
+          <button on:click={() => handleFilterClick("completed")} class="focus:text-white">Completed</button>
+          
         </div>
         
-        <div class="todo-container">
-
-          <div class="w-1/2 text-sm sm:text-xl my-8 text-[#999] border-white border-b border-opacity-25">
-
-            <button on:click={() => firestoreInit()} class="focus:text-white">All</button>
-
-            <span class="opacity-40">/</span>
-
-            <button on:click={() => firestoreInit("active")} class="focus:text-white">Active</button>
-
-            <span class="opacity-40">/</span>
-
-            <button on:click={() => firestoreInit("completed")} class="focus:text-white">Completed</button>
-            
-          </div>
-
+        {#if $isLoading}
+          <p>Loading...</p>
+        {:else}
           {#each userTodos as item (item.id)}
-            <div class="todo-list" animate:flip={{ duration: 200 }}>
+            <div class="todo-list" animate:flip={{ duration: 300 }}>
               <div class="flex">
                 <!-- svelte-ignore a11y-click-events-have-key-events -->
                 <!-- svelte-ignore a11y-no-static-element-interactions -->
@@ -173,17 +169,14 @@
           {:else}
             <p>No Tasks todo</p>
           {/each}
-        </div>
+        {/if}
+
       </div>
 
-      <button
-      class="block rounded-md bg-yellow-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-yellow-700 lg:text-md"
-      on:click={logout}>
-      Logout
-      </button>
     </div>
-    
 
+    <button class="block rounded-md bg-yellow-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-yellow-700 lg:text-md" on:click={logout}>Logout</button>
+  </div>
 {:else}
   <Login />
 {/if}
