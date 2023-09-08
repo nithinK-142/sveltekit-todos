@@ -46,26 +46,24 @@
     let queryConfig = query(userTodosCollection, orderDesc);
 
     if (filter === 'active') {
-      queryConfig = query(userTodosCollection, orderDesc, where("isComplete", "==", false));
+      queryConfig = query(queryConfig, where("isComplete", "==", false));
     } else if (filter === 'completed') {
-      queryConfig = query(userTodosCollection, orderDesc, where("isComplete", "==", true));
+      queryConfig = query(queryConfig, where("isComplete", "==", true));
      }
 
     return onSnapshot(queryConfig, getTodos, handleError);
-};
-
-
-  const handleError = (err) => {
-    console.error("Firebase error:", err);
   };
 
+  const handleError = (err) => {
+    // console.error("Firebase error:", err);
+  };
 
   const addTodo = async () => {
     const currentDate = new Date();
     const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
 
     if (task !== "") {
-      const todoRef = await addDoc(userTodosCollection, {
+      await addDoc(userTodosCollection, {
         task: task,
         isComplete: false,
         createdAt: formattedDateAndTime,
@@ -116,9 +114,9 @@
     <div class="containerr">
       <div class="main-container">
 
-        <div class="w-full my-14 grid items-center font-['Verdana']">
+        <div class="flex justify-center mt-14 mb-4 font-['Verdana']">
           <input type="text" placeholder="What needs to be done?"
-          class="px-1 py-1 text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60 border-b border-opacity-25 border-white"
+          class="px-1 py-1 text-xl sm:text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60  border-white border-b border-opacity-25"
           bind:this={inputElement}
           bind:value={task}
           />
@@ -126,7 +124,7 @@
         
         <div class="todo-container">
 
-          <div class="text-xl my-8 text-gray-400">
+          <div class="w-1/2 text-sm sm:text-xl my-8 text-[#999] border-white border-b border-opacity-25">
 
             <button on:click={() => firestoreInit()} class="focus:text-white">All</button>
 
@@ -205,10 +203,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-
-  .flex {
-    display: flex;
   }
 
   .btn {
