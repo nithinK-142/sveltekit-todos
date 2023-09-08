@@ -14,21 +14,21 @@
     addDoc,
     query,
     orderBy,
+    where
   } from "firebase/firestore";
   import Navbar from "./Navbar.svelte";
   import { onMount } from 'svelte';
 
-  let inputElement;
-
   onMount(() => {
+    firestoreInit();
     inputElement.focus();
   });
 
   let task = "";
   let userTodos = [];
+  let inputElement;
 
-  const userCollection = collection(db, "users");
-  const userTodosCollection = collection(userCollection, $user.user.uid, "todos");
+  const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
 
   const getTodos = (querySnapshot) => {
     userTodos.length = 0;
@@ -41,17 +41,24 @@
     });
   };
 
-  const firestoreInit = () => {
-    const todoRef = query(userTodosCollection, orderBy("createdAt", "desc"));
+  const firestoreInit = (filter) => {
+    const orderDesc = orderBy("createdAt", "desc");
+    let queryConfig = query(userTodosCollection, orderDesc);
 
-    return onSnapshot(todoRef, getTodos, handleError);
-  };
+    if (filter === 'active') {
+      queryConfig = query(userTodosCollection, orderDesc, where("isComplete", "==", false));
+    } else if (filter === 'completed') {
+      queryConfig = query(userTodosCollection, orderDesc, where("isComplete", "==", true));
+     }
+
+    return onSnapshot(queryConfig, getTodos, handleError);
+};
+
 
   const handleError = (err) => {
     console.error("Firebase error:", err);
   };
 
-  firestoreInit();
 
   const addTodo = async () => {
     const currentDate = new Date();
@@ -66,7 +73,6 @@
     }
     task = "";
   };
-
   
   const deleteTodo = async (id) => {
     await deleteDoc(doc(userTodosCollection, id));
@@ -119,6 +125,21 @@
         </div>
         
         <div class="todo-container">
+
+          <div class="text-xl my-8 text-gray-400">
+
+            <button on:click={() => firestoreInit()} class="focus:text-white">All</button>
+
+            <span class="opacity-40">/</span>
+
+            <button on:click={() => firestoreInit("active")} class="focus:text-white">Active</button>
+
+            <span class="opacity-40">/</span>
+
+            <button on:click={() => firestoreInit("completed")} class="focus:text-white">Completed</button>
+            
+          </div>
+
           {#each userTodos as item (item.id)}
             <div class="todo-list" animate:flip={{ duration: 200 }}>
               <div class="flex">
@@ -157,14 +178,11 @@
         </div>
       </div>
 
-      <!-- svelte-ignore a11y-click-events-have-key-events -->
-      <!-- svelte-ignore a11y-missing-attribute -->
-      <!-- svelte-ignore a11y-no-static-element-interactions -->
-      <a
+      <button
       class="block rounded-md bg-yellow-500 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-yellow-700 lg:text-md"
       on:click={logout}>
       Logout
-      </a>
+      </button>
     </div>
     
 
