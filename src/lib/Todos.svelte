@@ -40,10 +40,10 @@
         ...doc.data(),
         id: doc.id,
       }));
-      $isLoading = false;
     },(error) => {
       // console.error("Firestore error:", error);
     });
+    $isLoading = false;
   };
 
   const handleFilterClick = (selectedFilter) => {
