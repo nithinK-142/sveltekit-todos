@@ -22,13 +22,16 @@
 
   onMount(() => {
     inputElement.focus();
+    firestoreInit();
   });
 
   let task = "";
   let userTodos = [];
+  let completedTodos = [];
 
-  const userCollection = collection(db, "users");
-  const userTodosCollection = collection(userCollection, $user.user.uid, "todos");
+  // const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
+  const activeTodosCollection = collection(db, "users", $user.user.uid, "active");
+  const completedTodosCollection = collection(db, "users", $user.user.uid, "completed");
 
   const getTodos = (querySnapshot) => {
     userTodos.length = 0;
@@ -38,11 +41,12 @@
         id: doc.id,
       };
       userTodos.push(todo);
+      completedTodos.push(todo);
     });
   };
 
   const firestoreInit = () => {
-    const todoRef = query(userTodosCollection, orderBy("createdAt", "desc"));
+    const todoRef = query(activeTodosCollection, orderBy("createdAt", "desc"));
 
     return onSnapshot(todoRef, getTodos, handleError);
   };
@@ -51,14 +55,12 @@
     console.error("Firebase error:", err);
   };
 
-  firestoreInit();
-
   const addTodo = async () => {
     const currentDate = new Date();
     const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
 
     if (task !== "") {
-      const todoRef = await addDoc(userTodosCollection, {
+      const todoRef = await addDoc(activeTodosCollection, {
         task: task,
         isComplete: false,
         createdAt: formattedDateAndTime,
@@ -155,8 +157,47 @@
             <p>No Tasks todo</p>
           {/each}
         </div>
-      </div>
 
+        <div class="todo-container">
+          {#each completedTodos as item (item.id)}
+            <div class="todo-list" animate:flip={{ duration: 200 }}>
+              <div class="flex">
+                <!-- svelte-ignore a11y-click-events-have-key-events -->
+                <!-- svelte-ignore a11y-no-static-element-interactions -->
+                <div
+                  class="status-container btn"
+                  on:click={() => markComplete(item.id, item.isComplete)}
+                  title={item.isComplete
+                    ? "Mark as incomplete"
+                    : "Mark as complete"}
+                >
+                  {item.isComplete ? "🔳" : "✅"}
+                </div>
+                <div class="tasks" class:complete={item.isComplete}>
+                  {#if item.task.length < 25}
+                    {item.task}
+                  {:else}
+                    {formatAndSliceTask(item.task)}
+                  {/if}
+                </div>
+              </div>
+              <div class="delete-container">
+                <button
+                  class="trashBtn btn"
+                  on:click={() => deleteTodo(item.id)}
+                  title="Delete this task."
+                >
+                  <img class="trashIcon" src={trash} alt="trashIcon" />
+                </button>
+              </div>
+            </div>
+          {:else}
+            <p>No Tasks todo</p>
+          {/each}
+        </div>
+
+
+      </div>
       <!-- svelte-ignore a11y-click-events-have-key-events -->
       <!-- svelte-ignore a11y-missing-attribute -->
       <!-- svelte-ignore a11y-no-static-element-interactions -->
