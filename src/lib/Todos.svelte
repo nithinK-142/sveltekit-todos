@@ -9,6 +9,8 @@
   import { auth, db } from "./firebaseConfig";
   import { collection, doc, updateDoc, deleteDoc, addDoc, query, orderBy, where } from "firebase/firestore";
   import { flip } from "svelte/animate";
+  import { fade } from "svelte/transition";
+  import { tick } from 'svelte';
 
   // Initialize Firebase once
   const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
@@ -51,19 +53,21 @@
     setTimeout(() => {
       filter = selectedFilter;
       firestoreInit();
-    }, 300);
+    }, 200);
   };
 
   const addTodo = async () => {
     if (task !== "") {
       const currentDate = new Date();
       const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
-      await addDoc(userTodosCollection, {
+      const todoRef = await addDoc(userTodosCollection, {
         task: task,
         isComplete: false,
         createdAt: formattedDateAndTime,
       });
       task = "";
+      await tick();
+      inputElement.focus();
     }
   };
   
@@ -132,8 +136,9 @@
         </div>
         
         {#if $isLoading}
-          <p>Loading...</p>
+          <!-- <p>Loading...</p> -->
         {:else}
+        <div transition:fade={{ duration: 500 }}>
           {#each userTodos as item (item.id)}
             <div class="todo-list" animate:flip={{ duration: 300 }}>
               <div class="flex">
@@ -167,8 +172,9 @@
               </div>
             </div>
           {:else}
-            <p>No Tasks todo</p>
+            <p>Nothing todo</p>
           {/each}
+        </div>
         {/if}
 
       </div>
