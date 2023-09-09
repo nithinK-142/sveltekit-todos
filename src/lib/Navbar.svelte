@@ -10,20 +10,16 @@
 <nav>
     <div class="w-full flex justify-between px-4 py-2 select-none bg-[#222]">
 
-        <div class="flex items-center space-x-2">
-            <span class="object-cover h-6">
-                <img src={logo} alt="logo" class="h-6 object-cover" id="user-image" />
+        <div class="flex-align space-x-2">
+            <span class="object-cover h-4 sm:h-6">
+                <img src={logo} alt="logo" class="h-4 sm:h-6 object-cover" id="user-image" />
             </span>
-            <h1 class="text-white">
-                <strong>Svelte Todos</strong>
-            </h1>
+            <h1 class="text-white font-bold text-lg sm:text-2xl leading-normal sm:leading-normal">Svelte Todos</h1>
         </div>
 
-        <div class="flex items-center group space-x-2">
-            <span class="h-10 w-10 rounded-full object-cover">
-                <!-- svelte-ignore a11y-click-events-have-key-events -->
-                <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-                <img src={$user.user.photoURL} alt="UserImage" class="rounded-full w-10 h-10 cursor-pointer userimg"  
+        <div class="flex-align group">
+            <span class="w-6 h-6 sm:w-10 sm:h-10 rounded-full object-cover">
+                <img src={$user.user.photoURL} alt="UserImage" class="rounded-full w-6 h-6 sm:w-10 sm:h-10 cursor-pointer userimg"  
                 />
             </span>
             
