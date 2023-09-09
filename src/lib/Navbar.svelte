@@ -17,8 +17,8 @@
             <h1 class="text-white font-bold text-lg sm:text-2xl leading-normal sm:leading-normal">Svelte Todos</h1>
         </div>
 
-        <div class="flex-align group">
-            <span class="w-6 h-6 sm:w-10 sm:h-10 rounded-full object-cover">
+        <div class="flex-align group ">
+            <span class="w-6 h-6 sm:w-10 sm:h-10 rounded-full object-cover border-green-800 border-2">
                 <img src={$user.user.photoURL} alt="UserImage" class="rounded-full w-6 h-6 sm:w-10 sm:h-10 cursor-pointer userimg"  
                 />
             </span>
