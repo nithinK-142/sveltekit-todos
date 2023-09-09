@@ -135,7 +135,7 @@
           <!-- <p>Loading...</p> -->
         {:else}
           <!-- task list -->
-          <div transition:fade={{ duration: 500 }}>
+          <div class="floating-scrollbar" transition:fade={{ duration: 500 }}>
             {#each userTodos as item (item.id)}
               <div class="w-full bg-gray-100 flex-align justify-between py-2 px-1 pr-[10px] mb-1" animate:flip={{ duration: 300 }}>
                 <div class="flex w-[95%]">

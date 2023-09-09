@@ -39,3 +39,34 @@ body {
 .flex-justify {
   @apply flex justify-center
 }
+
+/* .floating-scrollbar {
+  max-height: 50vh;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+
+.floating-scrollbar::-webkit-scrollbar {
+  width: 0.2em;
+}
+.floating-scrollbar:hover::-webkit-scrollbar-thumb {
+  border-radius: 100vw;
+  background: gray;
+} */
+
+@media (min-width: 640px) {
+  .floating-scrollbar {
+    max-height: 50vh;
+    padding: 1rem;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+  
+  .floating-scrollbar::-webkit-scrollbar {
+    width: 0.5em;
+  }
+  .floating-scrollbar:hover::-webkit-scrollbar-thumb {
+    border-radius: 100vw;
+    background: gray;
+  }
+}
