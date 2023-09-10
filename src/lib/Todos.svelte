@@ -90,10 +90,10 @@
     // localStorage.setItem("userName", null);
     // localStorage.setItem("userImageURL", null);
     try {
-    await auth.signOut();
-  }catch(err){
-    console.log(err)
-  }
+      await auth.signOut();
+    }catch(err){
+      // console.log(err)
+    }
   }
 </script>
 
@@ -101,13 +101,13 @@
 
 {#if $isLoggedIn}
 <Navbar />
-  <div class="grid place-items-center gap-10">
+  <div class="grid gap-10 place-items-center">
     <div class="w-[300px] sm:w-1/2 flex-align flex-col">
 
       <!-- input -->
       <div class="flex-justify mt-14 mb-0 sm:mb-4 font-['Verdana']">
         <input type="text" placeholder="What needs to be done?"
-        class="px-1 py-1 text-xl sm:text-3xl text-white bg-transparent border-0 outline-none caret-inherit focus:placeholder-opacity-50 placeholder-white placeholder-opacity-60  border-white border-b border-opacity-25"
+        class="px-1 py-1 text-xl text-white placeholder-white bg-transparent border-0 border-b border-white border-opacity-25 outline-none sm:text-3xl caret-inherit focus:placeholder-opacity-50 placeholder-opacity-60"
         bind:this={inputElement}
         bind:value={task}
         />
@@ -116,7 +116,7 @@
       <div class="w-[300px] sm:w-[25rem]">
 
       <!-- sort -->
-        <div class="w-full text-sm sm:text-xl my-8 ml-4 sm:ml-0 text-[#999] ">
+        <div class=" text-sm sm:text-xl my-8 ml-4 sm:ml-0 text-[#999] ">
 
           <button on:click={() => handleFilterClick()} class="focus:text-white">All</button>
 
@@ -128,7 +128,7 @@
 
           <button on:click={() => handleFilterClick("completed")} class="focus:text-white">Completed</button>
 
-          <div class="w-[90%] sm:w-full border-white border-b border-opacity-25 "></div>      
+          <div class="w-[95%] sm:w-[97%] border-white border-b border-opacity-25 "></div>      
         </div>
         
         {#if $isLoading}
@@ -142,7 +142,7 @@
                   <!-- svelte-ignore a11y-click-events-have-key-events -->
                   <!-- svelte-ignore a11y-no-static-element-interactions -->
                   <div 
-                    class="select-none cursor-pointer flex-center "
+                    class="cursor-pointer select-none flex-center "
                     on:click={() => markComplete(item.id, item.isComplete)}
                     title={item.isComplete ? "Mark as incomplete" : "Mark as complete"}>
                     <span class="text-xl sm:text-2xl">
@@ -164,7 +164,7 @@
                 </div>
               </div>
             {:else}
-              <p class="text-white text-center">Nothing todo</p>
+              <p class="text-center text-white">Nothing todo</p>
             {/each}
           </div>
         {/if}
@@ -191,5 +191,21 @@
   .trashIcon:hover {
     transition: transform 0.2s linear;
     transform: scale(1.2);
+  }
+  @media (min-width: 640px) {
+    .floating-scrollbar {
+      max-height: 50vh;
+      padding: 0.4rem;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+    
+    .floating-scrollbar::-webkit-scrollbar {
+      width: 0.5em;
+    }
+    .floating-scrollbar:hover::-webkit-scrollbar-thumb {
+      border-radius: 100vw;
+      background: gray;
+    }
   }
 </style>
