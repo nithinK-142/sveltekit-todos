@@ -69,15 +69,15 @@
 
   <section>
 
-    <div class="flex-center flex-col gap-4 mt-32 text-center">
-      <h1 class="app-heading text-3xl sm:text-4xl"> Sveltkit & Firebase</h1>
-      <h2 class="app-heading text-2xl sm:text-3xl"> Todo App</h2>
+    <div class="flex-col gap-4 mt-32 text-center flex-center">
+      <h1 class="text-3xl app-heading sm:text-4xl"> Sveltkit & Firebase</h1>
+      <h2 class="text-2xl app-heading sm:text-3xl"> Todo App</h2>
     </div>
 
-    <div class="w-full flex justify-center mt-10">
+    <div class="flex justify-center w-full mt-10">
 
       <div class="flex flex-col bg-[hsla(0,0%,100%,.8)] py-4 px-8 rounded-lg">
-        <h3 class="text-black text-center font-bold">Login</h3>
+        <h3 class="font-bold text-center text-black">Login</h3>
         
         <div class="flex justify-center m-4 space-x-6">
           <span class="login-container">
