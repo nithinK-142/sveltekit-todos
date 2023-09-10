@@ -1,31 +1,23 @@
 <script>
   import "../app.css";
-  import { onMount } from 'svelte';
   import Navbar from "./Navbar.svelte";
   import { onSnapshot } from "firebase/firestore";
   import trash from "../assets/trash.svg";
   import Login from "../routes/Login.svelte";
   import { isLoggedIn, user, isLoading } from "../stores";
   import { auth, db } from "./firebaseConfig";
-  import { collection, doc, updateDoc, deleteDoc, addDoc, query, orderBy, where } from "firebase/firestore";
+  import { collection, doc, updateDoc, deleteDoc, query, orderBy, where } from "firebase/firestore";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
-  import { tick } from 'svelte';
+  import Input from "./Input.svelte";
 
   // Initialize Firebase once
   const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
   const orderDesc = orderBy("createdAt", "desc");
 
   // State variables
-  let task = "";
   let userTodos = [];
   let filter = "";
-  let inputElement;
-
-  onMount(() => {
-    firestoreInit();
-    inputElement.focus();
-  });
 
   const firestoreInit = () => {
     let queryConfig = query(userTodosCollection, orderDesc);
@@ -48,6 +40,8 @@
     $isLoading = false;
   };
 
+  firestoreInit();
+
   const handleFilterClick = (selectedFilter) => {
     $isLoading = true;
     setTimeout(() => {
@@ -56,20 +50,6 @@
     }, 300);
   };
 
-  const addTodo = async () => {
-    if (task !== "") {
-      const currentDate = new Date();
-      const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
-      const todoRef = await addDoc(userTodosCollection, {
-        task: task,
-        isComplete: false,
-        createdAt: formattedDateAndTime,
-      });
-      task = "";
-      await tick();
-      inputElement.focus();
-    }
-  };
   
   const deleteTodo = async (id) => {
     await deleteDoc(doc(userTodosCollection, id));
@@ -79,10 +59,6 @@
     await updateDoc(doc(userTodosCollection, id), {
       isComplete: !completionStatus,
     });
-  };
-
-  const keyPressed = (event) => {
-    if (event.keyCode === 13) addTodo();
   };
 
   const logout = async () => {
@@ -97,21 +73,12 @@
   }
 </script>
 
-<svelte:window on:keydown={keyPressed} />
-
 {#if $isLoggedIn}
 <Navbar />
   <div class="grid gap-10 place-items-center">
     <div class="w-[300px] sm:w-1/2 flex-align flex-col">
 
-      <!-- input -->
-      <div class="flex-justify mt-14 mb-0 sm:mb-4 font-['Verdana']">
-        <input type="text" placeholder="What needs to be done?"
-        class="px-1 py-1 text-xl text-white placeholder-white bg-transparent border-0 border-b border-white border-opacity-25 outline-none sm:text-3xl caret-inherit focus:placeholder-opacity-50 placeholder-opacity-60"
-        bind:this={inputElement}
-        bind:value={task}
-        />
-      </div>
+<Input />
       
       <div class="w-[300px] sm:w-[25rem]">
 
