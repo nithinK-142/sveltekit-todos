@@ -90,10 +90,10 @@
     // localStorage.setItem("userName", null);
     // localStorage.setItem("userImageURL", null);
     try {
-    await auth.signOut();
-  }catch(err){
-    console.log(err)
-  }
+      await auth.signOut();
+    }catch(err){
+      // console.log(err)
+    }
   }
 </script>
 
@@ -191,5 +191,21 @@
   .trashIcon:hover {
     transition: transform 0.2s linear;
     transform: scale(1.2);
+  }
+  @media (min-width: 640px) {
+    .floating-scrollbar {
+      max-height: 50vh;
+      padding: 0.4rem;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+    
+    .floating-scrollbar::-webkit-scrollbar {
+      width: 0.5em;
+    }
+    .floating-scrollbar:hover::-webkit-scrollbar-thumb {
+      border-radius: 100vw;
+      background: gray;
+    }
   }
 </style>
