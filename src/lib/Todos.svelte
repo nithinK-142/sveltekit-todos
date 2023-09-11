@@ -10,6 +10,7 @@
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
   import Input from "./Input.svelte";
+  import UserTodo from "./UserTodo.svelte";
 
   // Initialize Firebase once
   const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
@@ -18,29 +19,30 @@
   // State variables
   let userTodos = [];
   let filter = "";
+  let firestoreInit;
 
-  const firestoreInit = () => {
-    let queryConfig = query(userTodosCollection, orderDesc);
-    if (filter === 'active') {
-      queryConfig = query(queryConfig, where("isComplete", "==", false));
-    } else if (filter === 'completed') {
-      queryConfig = query(queryConfig, where("isComplete", "==", true));
-    }
+  // const firestoreInit = () => {
+  //   let queryConfig = query(userTodosCollection, orderDesc);
+  //   if (filter === 'active') {
+  //     queryConfig = query(queryConfig, where("isComplete", "==", false));
+  //   } else if (filter === 'completed') {
+  //     queryConfig = query(queryConfig, where("isComplete", "==", true));
+  //   }
 
-    userTodos.length = 0;
+  //   userTodos.length = 0;
 
-    onSnapshot(queryConfig, (querySnapshot) => {
-      userTodos = querySnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-    },(error) => {
-      // console.error("Firestore error:", error);
-    });
-    $isLoading = false;
-  };
+  //   onSnapshot(queryConfig, (querySnapshot) => {
+  //     userTodos = querySnapshot.docs.map((doc) => ({
+  //       ...doc.data(),
+  //       id: doc.id,
+  //     }));
+  //   },(error) => {
+  //     // console.error("Firestore error:", error);
+  //   });
+  //   $isLoading = false;
+  // };
 
-  firestoreInit();
+  // firestoreInit();
 
   const handleFilterClick = (selectedFilter) => {
     $isLoading = true;
@@ -73,6 +75,9 @@
   }
 </script>
 
+
+<UserTodo bind:firestoreInit={firestoreInit} />
+
 {#if $isLoggedIn}
 <Navbar />
   <div class="grid gap-10 place-items-center">
@@ -85,15 +90,15 @@
       <!-- sort -->
         <div class=" text-sm sm:text-xl my-8 ml-4 sm:ml-0 text-[#999] ">
 
-          <button on:click={() => handleFilterClick()} class="focus:text-white">All</button>
+          <button on:click={() => firestoreInit()} class="focus:text-white">All</button>
 
           <span class="opacity-40">/</span>
 
-          <button on:click={() => handleFilterClick("active")} class="focus:text-white">Active</button>
+          <button on:click={() => firestoreInit("active")} class="focus:text-white">Active</button>
 
           <span class="opacity-40">/</span>
 
-          <button on:click={() => handleFilterClick("completed")} class="focus:text-white">Completed</button>
+          <button on:click={() => firestoreInit()} class="focus:text-white">Completed</button>
 
           <div class="w-[95%] sm:w-[97%] border-white border-b border-opacity-25 "></div>      
         </div>
