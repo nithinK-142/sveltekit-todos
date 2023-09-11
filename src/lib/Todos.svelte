@@ -4,45 +4,30 @@
   import { onSnapshot } from "firebase/firestore";
   import trash from "../assets/trash.svg";
   import Login from "../routes/Login.svelte";
-  import { isLoggedIn, user, isLoading } from "../stores";
+  import { isLoggedIn, user, userTodos, isLoading } from "../stores";
   import { auth, db } from "./firebaseConfig";
   import { collection, doc, updateDoc, deleteDoc, query, orderBy, where } from "firebase/firestore";
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
   import Input from "./Input.svelte";
   import UserTodo from "./UserTodo.svelte";
+  import { onMount } from "svelte";
+
+  onMount(() => {
+    $isLoading = true;
+    firestoreInit();
+    userTodos1 = [...JSON.stringify($userTodos), userTodos1];
+  });
 
   // Initialize Firebase once
+  let userTodos1 = [];
   const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
-  const orderDesc = orderBy("createdAt", "desc");
 
   // State variables
-  let userTodos = [];
+  console.table(JSON.stringify($userTodos));
+
   let filter = "";
   let firestoreInit;
-
-  // const firestoreInit = () => {
-  //   let queryConfig = query(userTodosCollection, orderDesc);
-  //   if (filter === 'active') {
-  //     queryConfig = query(queryConfig, where("isComplete", "==", false));
-  //   } else if (filter === 'completed') {
-  //     queryConfig = query(queryConfig, where("isComplete", "==", true));
-  //   }
-
-  //   userTodos.length = 0;
-
-  //   onSnapshot(queryConfig, (querySnapshot) => {
-  //     userTodos = querySnapshot.docs.map((doc) => ({
-  //       ...doc.data(),
-  //       id: doc.id,
-  //     }));
-  //   },(error) => {
-  //     // console.error("Firestore error:", error);
-  //   });
-  //   $isLoading = false;
-  // };
-
-  // firestoreInit();
 
   const handleFilterClick = (selectedFilter) => {
     $isLoading = true;
@@ -108,7 +93,7 @@
         {:else}
           <!-- task list -->
           <div class="floating-scrollbar" transition:fade={{ duration: 500 }}>
-            {#each userTodos as item (item.id)}
+            {#each userTodos1 as item (item.id)}
               <div class="w-full bg-gray-100 flex-align justify-between py-2 px-1 pr-[10px] mb-1" animate:flip={{ duration: 300 }}>
                 <div class="flex w-[95%]">
                   <!-- svelte-ignore a11y-click-events-have-key-events -->

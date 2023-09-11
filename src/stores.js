@@ -1,6 +1,7 @@
 import { writable } from "svelte/store";
 
 export const user = writable({});
+export const userTodos = writable({});
 export const isLoggedIn = writable(false);
 export const isLoading = writable(false);
 

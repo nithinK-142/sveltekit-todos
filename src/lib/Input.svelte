@@ -15,7 +15,6 @@
   const userTodosCollection = collection(db, "users", $user.user.uid, "todos");
 
   const addTodo = async () => {
-    console.log("first")
     if (task !== "") {
       const currentDate = new Date();
       const formattedDateAndTime = `${currentDate.toDateString()} ${currentDate.toLocaleTimeString()}`;
