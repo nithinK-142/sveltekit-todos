@@ -10,7 +10,7 @@
   // console.log(JSON.stringify($userTodos))
 
   export const firestoreInit = (filter) => {
-    console.log("first")
+    console.log(filter)
     let queryConfig = query(userTodosCollection, orderDesc);
     if (filter === "active") {
       queryConfig = query(queryConfig, where("isComplete", "==", false));
